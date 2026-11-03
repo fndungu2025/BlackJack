@@ -13,7 +13,7 @@
 
   const el = {
     tabs: document.querySelectorAll(".tab"),
-    views: { table: $("view-table"), profile: $("view-profile"), players: $("view-players") },
+    views: { table: $("view-table"), profile: $("view-profile"), players: $("view-players"), admin: $("view-admin") },
     nudge: $("profile-nudge"),
     status: $("profile-status"),
     card: $("profile-card"),
@@ -50,7 +50,8 @@
   // ---------- Tabs ----------
 
   function showView(name) {
-    if (!el.views[name]) name = "table";
+    const tab = $(`tab-${name}`);
+    if (!el.views[name] || !tab || tab.hidden) name = "table"; // e.g. Admin tab for non-admins
     for (const [key, view] of Object.entries(el.views)) view.hidden = key !== name;
     el.tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.view === name)));
     if (location.hash !== `#${name}`) history.replaceState(null, "", name === "table" ? location.pathname : `#${name}`);
@@ -60,6 +61,7 @@
   el.tabs.forEach((t) => t.addEventListener("click", () => showView(t.dataset.view)));
   document.querySelectorAll("[data-goto]").forEach((b) => b.addEventListener("click", () => showView(b.dataset.goto)));
   window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+  window.bjShowView = (name) => showView(name);
 
   // ---------- Helpers ----------
 

@@ -32,6 +32,7 @@
         <img class="avatar" id="avatar" alt="" referrerpolicy="no-referrer" hidden />
         <span class="avatar initials" id="initials" hidden></span>
         <span class="greeting" id="greeting"></span>
+        <span class="role-badge" id="role-badge" hidden>Admin</span>
         <button class="btn ghost small" id="logout">Sign out</button>
       </div>
       <div class="stats">
@@ -45,6 +46,7 @@
       <button class="tab" role="tab" id="tab-table" data-view="table" aria-controls="view-table">Table</button>
       <button class="tab" role="tab" id="tab-profile" data-view="profile" aria-controls="view-profile">Profile</button>
       <button class="tab" role="tab" id="tab-players" data-view="players" aria-controls="view-players">Players</button>
+      <button class="tab" role="tab" id="tab-admin" data-view="admin" aria-controls="view-admin" hidden>Admin</button>
     </nav>
 
     <div class="view" id="view-table" role="tabpanel" aria-labelledby="tab-table">
@@ -142,6 +144,17 @@
       <ol class="players" id="players-list"></ol>
     </section>
 
+    <section class="view" id="view-admin" role="tabpanel" aria-labelledby="tab-admin" hidden>
+      <div class="players-head">
+        <h2>Admin</h2>
+        <button class="btn ghost small" id="admin-refresh">Refresh</button>
+      </div>
+      <div class="admin-tiles" id="admin-tiles"></div>
+      <input type="search" class="admin-search" id="admin-search" placeholder="Search by name, username or email" aria-label="Search users" />
+      <p class="profile-status" id="admin-status" role="status" aria-live="polite"></p>
+      <ul class="admin-users" id="admin-users"></ul>
+    </section>
+
     <footer class="rules">
       6-deck shoe · Blackjack pays 3:2 · Dealer stands on all 17s · Double on any first two cards ·
       Cards by <a href="https://deckofcardsapi.com/" target="_blank" rel="noopener">deckofcardsapi.com</a>
@@ -152,5 +165,6 @@
   <script src="profile.js"></script>
   <script src="app.js"></script>
   <script src="stats.js"></script>
+  <script src="admin.js"></script>
 </body>
 </html>

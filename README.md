@@ -39,6 +39,27 @@ Each player's bankroll and record are stored in their account (`player_stats`),
 so they follow the player to any device. The first time someone signs in, their
 account starts with the bankroll already saved in that browser.
 
+## Roles
+
+There are two roles: **player** (everyone, by default) and **admin**. Admins get
+an **Admin** tab and an "Admin" badge in the header. The Admin tab shows every
+account, including email and sign-in times, which players can never see. From it
+an admin can make other users admins or players, reset a player's bankroll, and
+delete a profile (and its uploaded photo). Admins can't change their own role, so
+the last admin can't lock themselves out.
+
+Roles are enforced by the database, not just by hiding the tab: the private
+account list comes from `admin_list_users()`, which refuses non-admins, and row
+level security limits players to their own rows.
+
+To make someone an admin from the Supabase SQL editor (if no admin can sign in):
+
+```sql
+insert into public.user_roles (user_id, role)
+select id, 'admin' from auth.users where email = 'someone@example.com'
+on conflict (user_id) do update set role = 'admin';
+```
+
 ## Database
 
 | Table / bucket | Who can read | Who can change |
@@ -46,6 +67,9 @@ account starts with the bankroll already saved in that browser.
 | `profiles` | any signed-in player | only the owner |
 | `player_stats` | any signed-in player | only the owner |
 | `avatars` bucket | public image links | only the owner (files in a folder named after their user id) |
+| `user_roles` | your own role; admins see all | only admins, and not their own role |
+
+Admins can also edit or delete any profile, stats row or avatar.
 
 Signed-out visitors can't read either table. The SQL is in `supabase/migrations/`
 and has already been applied to the project. Because the game runs in the

@@ -275,7 +275,59 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .player-numbers strong { color: var(--gold); }
 .player-numbers span { font-size: 0.8rem; color: var(--muted); }
 
+/* ---------- Admin ---------- */
+.role-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #222;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.admin-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.tile { padding: 14px; border-radius: 12px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.12); }
+.tile strong { display: block; font-size: 1.5rem; color: var(--gold); }
+.tile span { font-size: 0.85rem; color: var(--muted); }
+.admin-search {
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text);
+  width: 100%;
+}
+.admin-users { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.admin-user {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.admin-user.is-admin { border-color: var(--gold); }
+.admin-user .details { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.admin-user .details strong, .admin-user .details span { overflow-wrap: anywhere; }
+.admin-user .muted { color: var(--muted); font-size: 0.8rem; }
+.admin-user .controls { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; align-items: center; }
+.admin-user select {
+  font: inherit;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.btn.danger { border-color: var(--danger); color: var(--danger); }
+
 @media (max-width: 520px) {
+  .admin-user { grid-template-columns: 44px minmax(0, 1fr); }
+  .admin-user .controls { grid-column: 1 / -1; justify-content: flex-start; }
   .player { flex-wrap: wrap; }
   .player-numbers { flex-basis: 100%; flex-direction: row; justify-content: space-between; align-items: baseline; }
   .card { width: 68px; }
