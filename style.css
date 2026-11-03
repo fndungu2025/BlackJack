@@ -237,7 +237,47 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .form-error { color: var(--danger); margin: 0; min-height: 1.2em; }
 .form-actions { display: flex; gap: 10px; }
 
+.avatar-fields { display: flex; flex-direction: column; gap: 10px; flex: 1; min-width: 200px; }
+.btn.upload { position: relative; align-self: flex-start; flex-direction: row; font-weight: 600; cursor: pointer; }
+.btn.upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+.btn.upload:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
+.visibility-note { margin: 0; font-size: 0.85rem; color: var(--muted); }
+
+/* ---------- Players ---------- */
+.players-head { display: flex; align-items: center; justify-content: space-between; }
+.players-head h2 { margin: 0; color: var(--text); }
+.players { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.player.me { border-color: var(--gold); }
+.player-rank { width: 2.5ch; color: var(--muted); font-weight: 700; }
+.player-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--gold);
+}
+.player-avatar.initials { display: grid; place-items: center; background: var(--felt-dark); color: var(--gold); font-weight: 700; }
+.player-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.player-info strong { overflow-wrap: anywhere; }
+.player-handle { color: var(--gold); font-size: 0.85rem; }
+.player-bio { margin: 4px 0 0; font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere; }
+.player-numbers { display: flex; flex-direction: column; align-items: flex-end; text-align: right; }
+.player-numbers strong { color: var(--gold); }
+.player-numbers span { font-size: 0.8rem; color: var(--muted); }
+
 @media (max-width: 520px) {
+  .player { flex-wrap: wrap; }
+  .player-numbers { flex-basis: 100%; flex-direction: row; justify-content: space-between; align-items: baseline; }
   .card { width: 68px; }
   .cards { min-height: 100px; }
   .hand-area { min-height: 130px; }

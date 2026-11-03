@@ -13,7 +13,7 @@
 
   const el = {
     tabs: document.querySelectorAll(".tab"),
-    views: { table: $("view-table"), profile: $("view-profile") },
+    views: { table: $("view-table"), profile: $("view-profile"), players: $("view-players") },
     nudge: $("profile-nudge"),
     status: $("profile-status"),
     card: $("profile-card"),
@@ -34,10 +34,16 @@
     error: $("pf-error"),
     save: $("pf-save"),
     cancel: $("pf-cancel"),
+    file: $("pf-file"),
+    fileLabel: $("pf-file-label"),
   };
 
   let user = null;
   let profile = null;
+  let uploads = []; // storage paths uploaded during the current edit
+
+  const BUCKET = "avatars";
+  const AVATAR_SIZE = 256;
 
   const auth = () => window.bjAuth;
 
@@ -48,6 +54,7 @@
     for (const [key, view] of Object.entries(el.views)) view.hidden = key !== name;
     el.tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.view === name)));
     if (location.hash !== `#${name}`) history.replaceState(null, "", name === "table" ? location.pathname : `#${name}`);
+    if (user) document.dispatchEvent(new CustomEvent("view:shown", { detail: name }));
   }
 
   el.tabs.forEach((t) => t.addEventListener("click", () => showView(t.dataset.view)));
@@ -131,6 +138,77 @@
     el.bioCount.textContent = String(el.bio.value.length);
   }
 
+  // ---------- Avatar uploads ----------
+
+  // Storage path for an avatar URL in our bucket, or null for other URLs.
+  function storagePath(url) {
+    const marker = `/storage/v1/object/public/${BUCKET}/`;
+    const i = url ? url.indexOf(marker) : -1;
+    return i === -1 ? null : decodeURIComponent(url.slice(i + marker.length));
+  }
+
+  // Center-crop and shrink the image to a square JPEG.
+  async function toSquareJpeg(file) {
+    const bitmap = await createImageBitmap(file);
+    const side = Math.min(bitmap.width, bitmap.height);
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = AVATAR_SIZE;
+    canvas
+      .getContext("2d")
+      .drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, AVATAR_SIZE, AVATAR_SIZE);
+    bitmap.close?.();
+    return new Promise((resolve, reject) =>
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Couldn't process image"))), "image/jpeg", 0.88)
+    );
+  }
+
+  async function uploadAvatar() {
+    const file = el.file.files[0];
+    el.file.value = "";
+    if (!file) return;
+    el.error.textContent = "";
+    if (!file.type.startsWith("image/")) {
+      el.error.textContent = "Please choose an image file.";
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      el.error.textContent = "That image is over 10 MB. Please choose a smaller one.";
+      return;
+    }
+
+    el.fileLabel.textContent = "Uploading…";
+    el.file.disabled = el.save.disabled = true;
+    try {
+      const blob = await toSquareJpeg(file);
+      const path = `${user.id}/${Date.now()}.jpg`;
+      const storage = auth().client.storage.from(BUCKET);
+      const { error } = await storage.upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
+      if (error) throw error;
+      uploads.push(path);
+      el.avatar.value = storage.getPublicUrl(path).data.publicUrl;
+      el.avatar.removeAttribute("aria-invalid");
+      updatePreview();
+    } catch (err) {
+      console.error(err);
+      el.error.textContent = "Couldn't upload that photo. Try a different image.";
+    } finally {
+      el.fileLabel.textContent = "Upload a photo";
+      el.file.disabled = el.save.disabled = false;
+    }
+  }
+
+  // Delete uploaded files that are no longer used by the profile.
+  function cleanUpUploads(keepUrl, previousUrl) {
+    const keep = storagePath(keepUrl);
+    const stale = uploads.filter((p) => p !== keep);
+    const prev = storagePath(previousUrl);
+    if (prev && prev !== keep) stale.push(prev);
+    uploads = [];
+    if (stale.length) {
+      auth().client.storage.from(BUCKET).remove(stale).then(({ error }) => error && console.error(error));
+    }
+  }
+
   // ---------- Data ----------
 
   async function loadProfile() {
@@ -205,7 +283,9 @@
       }
       return;
     }
+    const previousUrl = profile ? profile.avatar_url : null;
     profile = data;
+    cleanUpUploads(profile.avatar_url, previousUrl);
     setStatus(creating ? "Profile created! Welcome to the table." : "Profile saved.", "ok");
     render();
   }
@@ -219,9 +299,11 @@
   });
   el.cancel.addEventListener("click", () => {
     setStatus("");
+    cleanUpUploads(profile && profile.avatar_url, null);
     renderCard();
   });
   el.avatar.addEventListener("input", updatePreview);
+  el.file.addEventListener("change", uploadAvatar);
   el.bio.addEventListener("input", updateBioCount);
   el.username.addEventListener("input", () => {
     const pos = el.username.selectionStart;
@@ -237,6 +319,7 @@
   });
 
   document.addEventListener("auth:signed-out", () => {
+    uploads = [];
     user = null;
     profile = null;
     el.nudge.hidden = true;

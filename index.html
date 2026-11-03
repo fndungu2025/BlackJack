@@ -44,6 +44,7 @@
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button class="tab" role="tab" id="tab-table" data-view="table" aria-controls="view-table">Table</button>
       <button class="tab" role="tab" id="tab-profile" data-view="profile" aria-controls="view-profile">Profile</button>
+      <button class="tab" role="tab" id="tab-players" data-view="players" aria-controls="view-players">Players</button>
     </nav>
 
     <div class="view" id="view-table" role="tabpanel" aria-labelledby="tab-table">
@@ -100,10 +101,16 @@
         <h2 id="form-title">Create your profile</h2>
         <div class="avatar-row">
           <img class="profile-avatar" id="pf-preview" alt="Avatar preview" referrerpolicy="no-referrer" />
-          <label>Avatar image URL
-            <input type="url" id="pf-avatar" name="avatar_url" placeholder="https://…" maxlength="500" />
-            <small>Defaults to your Google photo. Must start with https://</small>
-          </label>
+          <div class="avatar-fields">
+            <label class="btn upload">
+              <input type="file" id="pf-file" accept="image/jpeg,image/png,image/webp,image/gif" />
+              <span id="pf-file-label">Upload a photo</span>
+            </label>
+            <label>…or image URL
+              <input type="url" id="pf-avatar" name="avatar_url" placeholder="https://…" maxlength="500" />
+              <small>Defaults to your Google photo. Uploads are cropped to a square.</small>
+            </label>
+          </div>
         </div>
         <label>Display name
           <input type="text" id="pf-display" name="display_name" required maxlength="50" />
@@ -117,12 +124,22 @@
           <textarea id="pf-bio" name="bio" rows="3" maxlength="280"></textarea>
           <small><span id="pf-bio-count">0</span>/280</small>
         </label>
+        <p class="visibility-note">Your profile, bankroll and record are visible to other signed-in players.</p>
         <p class="form-error" id="pf-error" role="alert"></p>
         <div class="form-actions">
           <button type="submit" class="btn primary" id="pf-save">Create profile</button>
           <button type="button" class="btn ghost" id="pf-cancel" hidden>Cancel</button>
         </div>
       </form>
+    </section>
+
+    <section class="view" id="view-players" role="tabpanel" aria-labelledby="tab-players" hidden>
+      <div class="players-head">
+        <h2>Players</h2>
+        <button class="btn ghost small" id="players-refresh">Refresh</button>
+      </div>
+      <p class="profile-status" id="players-status" role="status" aria-live="polite"></p>
+      <ol class="players" id="players-list"></ol>
     </section>
 
     <footer class="rules">
@@ -134,5 +151,6 @@
   <script src="auth.js"></script>
   <script src="profile.js"></script>
   <script src="app.js"></script>
+  <script src="stats.js"></script>
 </body>
 </html>

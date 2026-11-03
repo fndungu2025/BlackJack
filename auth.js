@@ -82,8 +82,14 @@
 
     if (currentUserId !== user.id) {
       currentUserId = user.id;
-      // Defer so listeners can call Supabase outside the auth callback.
-      setTimeout(() => document.dispatchEvent(new CustomEvent("auth:signed-in", { detail: user })), 0);
+      // Wait until every script on the page has loaded (so all listeners are
+      // registered), and run outside the auth callback so listeners can call Supabase.
+      const announce = () =>
+        setTimeout(() => {
+          if (currentUserId === user.id) document.dispatchEvent(new CustomEvent("auth:signed-in", { detail: user }));
+        }, 0);
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", announce, { once: true });
+      else announce();
     }
   }
 

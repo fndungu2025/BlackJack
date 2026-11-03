@@ -25,15 +25,32 @@ meant to be public.
 ## Player profiles
 
 Signed-in players get a **Profile** tab where they create a profile: display
-name, a unique username, an optional bio and an avatar image URL (prefilled from
-Google). New players are taken to the Profile tab automatically the first time
-they sign in. Once saved, the header greeting uses their profile name and picture.
+name, a unique username, an optional bio and a profile photo. The photo can be
+uploaded (cropped to a 256px square and stored in the Supabase Storage bucket
+`avatars`) or given as an image URL; it defaults to their Google photo. New
+players are taken to the Profile tab automatically the first time they sign in.
 
-Profiles are stored in the `public.profiles` table in Supabase. Row Level Security
-lets each user read, create, edit and delete only their own row; signed-out
-visitors can't read the table at all. The SQL is in
-`supabase/migrations/20261103000000_create_profiles.sql` and has already been
-applied to the project.
+The **Players** tab lists everyone who has made a profile, ranked by bankroll,
+with their hands played and win rate.
+
+## Saved bankroll
+
+Each player's bankroll and record are stored in their account (`player_stats`),
+so they follow the player to any device. The first time someone signs in, their
+account starts with the bankroll already saved in that browser.
+
+## Database
+
+| Table / bucket | Who can read | Who can change |
+| --- | --- | --- |
+| `profiles` | any signed-in player | only the owner |
+| `player_stats` | any signed-in player | only the owner |
+| `avatars` bucket | public image links | only the owner (files in a folder named after their user id) |
+
+Signed-out visitors can't read either table. The SQL is in `supabase/migrations/`
+and has already been applied to the project. Because the game runs in the
+browser, a determined player could edit their own bankroll; the leaderboard is
+for fun, not for anything of value.
 
 ## Rules
 

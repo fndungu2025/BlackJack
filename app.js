@@ -300,6 +300,7 @@
     state.bankroll += delta;
     saveBankroll();
     state.phase = "done";
+    emit("game:hand-finished", { bankroll: state.bankroll, won: delta > 0 });
     if (state.bankroll < 5) text += " You're out of chips — reset to keep playing.";
     setMessage(text, kind);
   }
@@ -321,11 +322,33 @@
     state.dealer = [];
     state.phase = "betting";
     saveBankroll();
+    emit("game:bankroll-reset", { bankroll: state.bankroll });
     setMessage("Bankroll reset. Place your bet to begin.");
     render();
   }
 
   const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  // ---------- Integration with account sync (stats.js) ----------
+
+  function emit(name, detail) {
+    document.dispatchEvent(new CustomEvent(name, { detail }));
+  }
+
+  window.bjGame = {
+    // Replace the bankroll with the player's saved one. Returns false (and
+    // changes nothing) while a hand is in progress.
+    setBankroll(amount) {
+      if (state.phase === "playing" || state.phase === "dealer") return false;
+      state.bankroll = amount;
+      state.bet = Math.min(state.bet, amount);
+      state.baseBet = Math.min(state.baseBet, amount);
+      saveBankroll();
+      render();
+      return true;
+    },
+    getBankroll: () => state.bankroll,
+  };
 
   // ---------- Wire up ----------
 
