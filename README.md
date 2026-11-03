@@ -4,6 +4,24 @@ A browser Blackjack game built with plain HTML, CSS and JavaScript, using the fr
 [Deck of Cards API](https://deckofcardsapi.com/) for shuffling, dealing and card images.
 No build step and no dependencies.
 
+## Sign in with Google
+
+Players sign in with Google through Supabase Auth (project `noqaypbuqiopetudsqgi`)
+before they reach the table. Once signed in, the header greets them by first name
+with their Google profile picture (or their initials if the picture can't load).
+The Supabase URL and publishable key are in `auth.js`; the publishable key is
+meant to be public.
+
+**Supabase setup checklist** (Dashboard → Authentication):
+
+1. **Sign In / Providers → Google**: enabled, with your Google OAuth client ID and secret.
+   In Google Cloud Console, the OAuth client's authorized redirect URI must be
+   `https://noqaypbuqiopetudsqgi.supabase.co/auth/v1/callback`.
+2. **URL Configuration**: set **Site URL** to your Netlify URL
+   (e.g. `https://your-site.netlify.app`) and add it to **Redirect URLs**, plus
+   `http://localhost:8000` for local testing. If a URL isn't listed, Supabase
+   sends users to the Site URL after login instead.
+
 ## Rules
 
 - 6-deck shoe, reshuffled when fewer than 52 cards remain
@@ -27,7 +45,7 @@ Card faces come from each card's `image` field; the face-down card uses
 
 ## Run locally
 
-Open `index.html` in a browser, or serve the folder:
+Serve the folder (Google sign-in won't work from a `file://` page):
 
 ```bash
 python3 -m http.server 8000
