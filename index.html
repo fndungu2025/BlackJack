@@ -41,6 +41,16 @@
       </div>
     </header>
 
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" id="tab-table" data-view="table" aria-controls="view-table">Table</button>
+      <button class="tab" role="tab" id="tab-profile" data-view="profile" aria-controls="view-profile">Profile</button>
+    </nav>
+
+    <div class="view" id="view-table" role="tabpanel" aria-labelledby="tab-table">
+    <div class="profile-nudge" id="profile-nudge" hidden>
+      You don't have a profile yet. <button class="link" data-goto="profile">Create one</button>
+    </div>
+
     <section class="hand-area" aria-label="Dealer">
       <h2>Dealer <span class="score" id="dealer-score"></span></h2>
       <div class="cards" id="dealer-cards"></div>
@@ -70,6 +80,50 @@
         <button class="btn ghost" id="reset" hidden>Reset Bankroll</button>
       </div>
     </section>
+    </div>
+
+    <section class="view" id="view-profile" role="tabpanel" aria-labelledby="tab-profile" hidden>
+      <p class="profile-status" id="profile-status" role="status" aria-live="polite">Loading your profile…</p>
+
+      <div class="profile-card" id="profile-card" hidden>
+        <img class="profile-avatar" id="pc-avatar" alt="" referrerpolicy="no-referrer" />
+        <div>
+          <h2 class="pc-name" id="pc-name"></h2>
+          <p class="pc-username" id="pc-username"></p>
+          <p class="pc-bio" id="pc-bio"></p>
+          <p class="pc-meta" id="pc-meta"></p>
+          <button class="btn" id="edit-profile">Edit profile</button>
+        </div>
+      </div>
+
+      <form class="profile-form" id="profile-form" novalidate hidden>
+        <h2 id="form-title">Create your profile</h2>
+        <div class="avatar-row">
+          <img class="profile-avatar" id="pf-preview" alt="Avatar preview" referrerpolicy="no-referrer" />
+          <label>Avatar image URL
+            <input type="url" id="pf-avatar" name="avatar_url" placeholder="https://…" maxlength="500" />
+            <small>Defaults to your Google photo. Must start with https://</small>
+          </label>
+        </div>
+        <label>Display name
+          <input type="text" id="pf-display" name="display_name" required maxlength="50" />
+        </label>
+        <label>Username
+          <input type="text" id="pf-username" name="username" required minlength="3" maxlength="20"
+                 pattern="[a-z0-9_]{3,20}" autocapitalize="none" spellcheck="false" />
+          <small>3–20 characters: lowercase letters, numbers and underscores.</small>
+        </label>
+        <label>Bio <span class="optional">(optional)</span>
+          <textarea id="pf-bio" name="bio" rows="3" maxlength="280"></textarea>
+          <small><span id="pf-bio-count">0</span>/280</small>
+        </label>
+        <p class="form-error" id="pf-error" role="alert"></p>
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="pf-save">Create profile</button>
+          <button type="button" class="btn ghost" id="pf-cancel" hidden>Cancel</button>
+        </div>
+      </form>
+    </section>
 
     <footer class="rules">
       6-deck shoe · Blackjack pays 3:2 · Dealer stands on all 17s · Double on any first two cards ·
@@ -78,6 +132,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
   <script src="auth.js"></script>
+  <script src="profile.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

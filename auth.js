@@ -23,6 +23,8 @@
     auth: { flowType: "pkce", detectSessionInUrl: true, persistSession: true },
   });
 
+  window.bjAuth = { client, setIdentity: (name, picture) => setIdentity(name, picture), googleIdentity: (u) => googleIdentity(u) };
+
   function greetingFor(date = new Date()) {
     const h = date.getHours();
     if (h < 12) return "Good morning";
@@ -30,12 +32,10 @@
     return "Good evening";
   }
 
-  function showUser(user) {
-    const meta = user.user_metadata || {};
-    const fullName = meta.full_name || meta.name || user.email || "Player";
+  // Update the header greeting and avatar. Profile code calls this too, so a
+  // saved profile's name and picture replace the Google ones.
+  function setIdentity(fullName, picture) {
     const firstName = fullName.split(" ")[0];
-    const picture = meta.avatar_url || meta.picture;
-
     $("greeting").textContent = `${greetingFor()}, ${firstName}!`;
     $("greeting").title = fullName;
 
@@ -61,12 +61,37 @@
     } else {
       showInitials();
     }
+  }
+
+  function googleIdentity(user) {
+    const meta = user.user_metadata || {};
+    return {
+      fullName: meta.full_name || meta.name || user.email || "Player",
+      picture: meta.avatar_url || meta.picture || "",
+    };
+  }
+
+  let currentUserId = null;
+
+  function showUser(user) {
+    const { fullName, picture } = googleIdentity(user);
+    if (currentUserId !== user.id) setIdentity(fullName, picture);
 
     loginView.hidden = true;
     tableView.hidden = false;
+
+    if (currentUserId !== user.id) {
+      currentUserId = user.id;
+      // Defer so listeners can call Supabase outside the auth callback.
+      setTimeout(() => document.dispatchEvent(new CustomEvent("auth:signed-in", { detail: user })), 0);
+    }
   }
 
   function showLogin() {
+    if (currentUserId) {
+      currentUserId = null;
+      document.dispatchEvent(new CustomEvent("auth:signed-out"));
+    }
     tableView.hidden = true;
     loginView.hidden = false;
     googleBtn.disabled = false;

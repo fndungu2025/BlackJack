@@ -22,6 +22,19 @@ meant to be public.
    `http://localhost:8000` for local testing. If a URL isn't listed, Supabase
    sends users to the Site URL after login instead.
 
+## Player profiles
+
+Signed-in players get a **Profile** tab where they create a profile: display
+name, a unique username, an optional bio and an avatar image URL (prefilled from
+Google). New players are taken to the Profile tab automatically the first time
+they sign in. Once saved, the header greeting uses their profile name and picture.
+
+Profiles are stored in the `public.profiles` table in Supabase. Row Level Security
+lets each user read, create, edit and delete only their own row; signed-out
+visitors can't read the table at all. The SQL is in
+`supabase/migrations/20261103000000_create_profiles.sql` and has already been
+applied to the project.
+
 ## Rules
 
 - 6-deck shoe, reshuffled when fewer than 52 cards remain
