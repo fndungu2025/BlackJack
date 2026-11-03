@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blackjack</title>
+  <meta name="description" content="A browser Blackjack game powered by the Deck of Cards API." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="table">
+    <header class="topbar">
+      <h1>Blackjack</h1>
+      <div class="stats">
+        <span>Bankroll: <strong id="bankroll">$0</strong></span>
+        <span>Bet: <strong id="bet">$0</strong></span>
+        <span class="shoe">Shoe: <strong id="remaining">–</strong> cards</span>
+      </div>
+    </header>
+
+    <section class="hand-area" aria-label="Dealer">
+      <h2>Dealer <span class="score" id="dealer-score"></span></h2>
+      <div class="cards" id="dealer-cards"></div>
+    </section>
+
+    <div class="message" id="message" role="status" aria-live="polite">Place your bet to begin.</div>
+
+    <section class="hand-area" aria-label="Player">
+      <h2>You <span class="score" id="player-score"></span></h2>
+      <div class="cards" id="player-cards"></div>
+    </section>
+
+    <section class="controls">
+      <div class="chips" id="chips">
+        <button class="chip" data-amount="5">$5</button>
+        <button class="chip" data-amount="25">$25</button>
+        <button class="chip" data-amount="100">$100</button>
+        <button class="chip" data-amount="500">$500</button>
+        <button class="btn ghost" id="clear-bet">Clear</button>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="deal">Deal</button>
+        <button class="btn" id="hit" hidden>Hit</button>
+        <button class="btn" id="stand" hidden>Stand</button>
+        <button class="btn" id="double" hidden>Double</button>
+        <button class="btn primary" id="next" hidden>Next Hand</button>
+        <button class="btn ghost" id="reset" hidden>Reset Bankroll</button>
+      </div>
+    </section>
+
+    <footer class="rules">
+      6-deck shoe · Blackjack pays 3:2 · Dealer stands on all 17s · Double on any first two cards ·
+      Cards by <a href="https://deckofcardsapi.com/" target="_blank" rel="noopener">deckofcardsapi.com</a>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
